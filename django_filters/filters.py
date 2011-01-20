@@ -34,20 +34,29 @@ class Filter(object):
         self.creation_counter = Filter.creation_counter
         Filter.creation_counter += 1
 
+
+    def get_field(self):
+        """
+        create form Field instance for filter
+        """
+        if self.lookup_type is None or isinstance(self.lookup_type, (list, tuple)):
+            if self.lookup_type is None:
+                lookup = [(x, x) for x in LOOKUP_TYPES]
+            else:
+                lookup = [(x, x) for x in LOOKUP_TYPES if x in self.lookup_type]
+            field = LookupTypeField(self.field_class(
+                required=self.required, widget=self.widget, **self.extra),
+                lookup, required=self.required, label=self.label)
+        else:
+            field = self.field_class(required=self.required,
+                label=self.label, widget=self.widget, **self.extra)
+        return field
+
+
     @property
     def field(self):
         if not hasattr(self, '_field'):
-            if self.lookup_type is None or isinstance(self.lookup_type, (list, tuple)):
-                if self.lookup_type is None:
-                    lookup = [(x, x) for x in LOOKUP_TYPES]
-                else:
-                    lookup = [(x, x) for x in LOOKUP_TYPES if x in self.lookup_type]
-                self._field = LookupTypeField(self.field_class(
-                    required=self.required, widget=self.widget, **self.extra),
-                    lookup, required=self.required, label=self.label)
-            else:
-                self._field = self.field_class(required=self.required,
-                    label=self.label, widget=self.widget, **self.extra)
+            self._field = self.get_field()
         return self._field
 
     def filter(self, qs, value):

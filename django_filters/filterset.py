@@ -242,14 +242,21 @@ class BaseFilterSet(object):
     @property
     def form(self):
         if not hasattr(self, '_form'):
-            fields = SortedDict([(name, filter_.field) for name, filter_ in self.filters.iteritems()])
-            fields[ORDER_BY_FIELD] = self.ordering_field
-            Form =  type('%sForm' % self.__class__.__name__, (self._meta.form,), fields)
-            if self.is_bound:
-                self._form = Form(self.data, prefix=self.form_prefix)
-            else:
-                self._form = Form(prefix=self.form_prefix)
+            self._form = self.get_form()
         return self._form
+
+    def get_form(self):
+        """
+        create form instance based on defined filters
+        """
+        fields = SortedDict([(name, filter_.field) for name, filter_ in self.filters.iteritems()])
+        fields[ORDER_BY_FIELD] = self.ordering_field
+        Form =  type('%sForm' % self.__class__.__name__, (self._meta.form,), fields)
+        if self.is_bound:
+            form = Form(self.data, prefix=self.form_prefix)
+        else:
+            form = Form(prefix=self.form_prefix)
+        return form
 
     def get_ordering_field(self):
         if self._meta.order_by:
