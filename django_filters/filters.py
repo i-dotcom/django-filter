@@ -95,9 +95,14 @@ class MultipleChoiceFilter(Filter):
 
     def filter(self, qs, value):
         value = value or ()
-        # TODO: this is a bit of a hack, but ModelChoiceIterator doesn't have a
-        # __len__ method
-        if len(value) == len(list(self.field.choices)):
+        # to prevent running query for all items
+        if hasattr(self.field.choices, 'queryset'):
+            choices_length = self.field.choices.queryset.count()
+        else:
+            # TODO: this is a bit of a hack, but ModelChoiceIterator doesn't have a
+            # __len__ method
+            choices_length = len(list(self.field.choices))
+        if len(value) == choices_length:
             return qs
         q = Q()
         for v in value:
