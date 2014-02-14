@@ -8,7 +8,7 @@ from django.db.models.sql.constants import LOOKUP_SEP
 from django.utils.datastructures import SortedDict
 from django.utils.text import capfirst
 
-from django_filters.filters import Filter, CharFilter, BooleanFilter, \
+from django_filters_idc.filters import Filter, CharFilter, BooleanFilter, \
     ChoiceFilter, DateFilter, DateTimeFilter, TimeFilter, ModelChoiceFilter, \
     ModelMultipleChoiceFilter, NumberFilter
 
